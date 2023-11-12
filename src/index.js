@@ -17,4 +17,4 @@ app.use(morgan("tiny"));
 
 app.use("/users", userRouter);
 
-app.listen(8080, () => console.log("✅  Server Ready!"));
+app.listen(8080, "0.0.0.0", () => console.log("✅  Server Ready!"));
