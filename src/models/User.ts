@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   _id: { type: ObjectId, required: true },
   phoneNumber: { type: String, required: true },
   currentStatus: { type: Boolean, default: false },

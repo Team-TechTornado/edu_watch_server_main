@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
-const LogSchema = mongoose.Schema({
+const LogSchema = new mongoose.Schema({
   time: { type: Date, default: Date.now },
   entering: { type: Boolean, required: true },
 });
-const UserLogSchema = mongoose.Schema({
+const UserLogSchema = new mongoose.Schema({
   userId: { type: ObjectId, required: true, ref: "User" },
   logs: [LogSchema] || [],
 });
