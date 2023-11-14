@@ -1,9 +1,9 @@
 import mongoose, { Error } from "mongoose";
+require("dotenv").config();
 
-mongoose.connect(
-  "mongodb+srv://EDU-WATCH-DBA:vQ0ykWEfn7Vh4gM7@maindb.zpfumcv.mongodb.net/?retryWrites=true&w=majority",
-  { dbName: "main" }
-);
+mongoose.connect(process.env.MONGO_ADD || "mongodb://localhost:27017", {
+  dbName: "main",
+});
 
 const db = mongoose.connection;
 
