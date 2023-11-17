@@ -12,4 +12,5 @@ userRouter.get("/:phonenumber", getUsers);
 userRouter.put("/enter", enterUser);
 userRouter.put("/exit", exitUser);
 userRouter.get("/:_id/logs", getUserLogAll);
+
 export default userRouter;
