@@ -3,7 +3,7 @@ import {
   enterUser,
   exitUser,
   getUserLogAll,
-} from "../controllers/userControllers";
+} from "../controllers/prelaunchControllers";
 
 const express = require("express");
 const userRouter = express.Router();

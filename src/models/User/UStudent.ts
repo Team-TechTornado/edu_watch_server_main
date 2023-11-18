@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const StudentSchema = new mongoose.Schema({
   userId: { type: String, unique: true, requried: true },
@@ -12,6 +13,15 @@ const StudentSchema = new mongoose.Schema({
   sex: { type: ["M", "F", "N"], required: true },
   region: { type: String },
   school: { type: String },
+});
+
+StudentSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(
+      this.password,
+      Number(process.env.BYCRYPT_SALT)
+    );
+  }
 });
 
 const UStudent = mongoose.model("UStudent", StudentSchema);

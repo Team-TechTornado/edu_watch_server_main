@@ -1,64 +1,160 @@
 import { Request, Response } from "express";
-import User from "../models/User";
-import UserLogs from "../models/UserLogs";
+import UStudent from "../models/User/UStudent";
+import UParent from "../models/User/UParent";
+import UTeacher from "../models/User/UTeacher";
+import { compare } from "bcrypt";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import { redisClient } from "../utils/redis";
 
-//GET 학부모의 전화번호를 받아 id 반환
-export const getUsers = async (req: Request, res: Response) => {
-  const { phonenumber } = req.params;
-  const user = await User.findOne({ phoneNumber: phonenumber });
-  if (!Boolean(user) || user === null) {
-    return res.status(400).json(); //존재하지 않는 유저
+export const postJoinStudent = async (req: Request, res: Response) => {
+  const formData = req.body;
+  const checkId = await UStudent.exists({ userId: formData.userId });
+  if (checkId) {
+    return res.status(401).json();
+  }
+  const checkNickname = await UStudent.exists({ nickname: formData.nickname });
+  if (checkNickname) {
+    return res.status(402).json();
+  }
+  const checkTel = await UStudent.exists({ tel: formData.tel });
+  if (checkTel) {
+    return res.status(403).json();
   }
 
-  const log = await UserLogs.findOne({ userId: user._id });
-  if (!Boolean(log)) {
-    await UserLogs.create({ userId: user._id, logs: [] });
+  try {
+    await UStudent.create(req.body);
+    return res.status(200).json();
+  } catch (e) {
+    return res.status(405).json();
   }
-
-  return res.status(200).json({ _id: user._id }); //유저 아이디 반환
 };
 
-// PUT _id를 가진 학생의 상태를 입실 상태로 User에서 갱신. 그리고 userLog에 추가.
-export const enterUser = async (req: Request, res: Response) => {
-  const { _id } = req.body;
-
-  const user = await User.findOne({ _id });
-  if (!Boolean(user) || user === null) {
-    return res.status(400).json();
+export const postJoinParent = async (req: Request, res: Response) => {
+  const formData = req.body;
+  const checkId = await UParent.exists({ userId: formData.userId });
+  if (checkId) {
+    return res.status(401).json();
   }
-  user.currentStatus = true;
-  await user.save();
+  const checkNickname = await UParent.exists({ nickname: formData.nickname });
+  if (checkNickname) {
+    return res.status(402).json();
+  }
+  const checkTel = await UParent.exists({ tel: formData.tel });
+  if (checkTel) {
+    return res.status(403).json();
+  }
 
-  const userLogs = await UserLogs.findOne({ userId: _id });
-  userLogs!.logs.push({ entering: true });
-  await userLogs!.save();
-  return res.status(200).json();
+  try {
+    await UParent.create(req.body);
+    return res.status(200).json();
+  } catch (e) {
+    return res.status(405).json();
+  }
 };
 
-// PUT _id를 가진 학생의 상태를 퇴실 상태로 User에서 갱신. 그리고 userLog에 추가.
-export const exitUser = async (req: Request, res: Response) => {
-  const { _id } = req.body;
-
-  const user = await User.findOne({ _id });
-  if (!Boolean(user) || user === null) {
-    return res.status(400).json();
+export const postJoinTeacher = async (req: Request, res: Response) => {
+  const formData = req.body;
+  const checkId = await UTeacher.exists({ userId: formData.userId });
+  if (checkId) {
+    return res.status(401).json();
   }
-  user.currentStatus = false;
-  await user.save();
+  const checkNickname = await UTeacher.exists({ nickname: formData.nickname });
+  if (checkNickname) {
+    return res.status(402).json();
+  }
+  const checkTel = await UTeacher.exists({ tel: formData.tel });
+  if (checkTel) {
+    return res.status(403).json();
+  }
 
-  const userLogs = await UserLogs.findOne({ userId: _id });
-  userLogs!.logs.push({ entering: false });
-  await userLogs!.save();
-  return res.status(200).json();
+  try {
+    await UTeacher.create(req.body);
+    return res.status(200).json();
+  } catch (e) {
+    return res.status(405).json();
+  }
 };
 
-// GET _id를 통해 모든 활동 기록 조회
-export const getUserLogAll = async (req: Request, res: Response) => {
-  const { _id } = req.params;
-
-  const userLogs = await UserLogs.findOne({ userId: _id });
-  if (!Boolean(userLogs) || userLogs == null) {
-    return res.status(400).json();
+export const postLoginStudent = async (req: Request, res: Response) => {
+  const { userId, password } = req.body;
+  const student = await UStudent.findOne({ userId });
+  if (!student) {
+    return res.status(401).json();
   }
-  return res.status(200).json(userLogs.logs);
+  const checkPassWord = await compare(password, student.password);
+  if (!checkPassWord) {
+    return res.status(402).json();
+  }
+
+  //로그인 성공
+  //JWT 발급
+  const accessToken = generateAccessToken({
+    id: student.id,
+    userType: "Student",
+  });
+
+  const refreshToken = generateRefreshToken();
+
+  redisClient.set(student.id, refreshToken);
+
+  return res.status(200).json({
+    accessToken,
+    refreshToken,
+  });
+};
+
+export const postLoginParent = async (req: Request, res: Response) => {
+  const { userId, password } = req.body;
+  const parent = await UParent.findOne({ userId });
+  if (!parent) {
+    return res.status(401).json();
+  }
+  const checkPassWord = await compare(password, parent.password);
+  if (!checkPassWord) {
+    return res.status(402).json();
+  }
+
+  //로그인 성공
+  //JWT 발급
+  const accessToken = generateAccessToken({
+    id: parent.id,
+    userType: "Parent",
+  });
+
+  const refreshToken = generateRefreshToken();
+
+  redisClient.set(parent.id, refreshToken);
+
+  return res.status(200).json({
+    accessToken,
+    refreshToken,
+  });
+};
+
+export const postLoginTeacher = async (req: Request, res: Response) => {
+  const { userId, password } = req.body;
+  const teacher = await UTeacher.findOne({ userId });
+  if (!teacher) {
+    return res.status(401).json();
+  }
+  const checkPassWord = await compare(password, teacher.password);
+  if (!checkPassWord) {
+    return res.status(402).json();
+  }
+
+  //로그인 성공
+  //JWT 발급
+  const accessToken = generateAccessToken({
+    id: teacher.id,
+    userType: "Teacher",
+  });
+
+  const refreshToken = generateRefreshToken();
+
+  redisClient.set(teacher.id, refreshToken);
+
+  return res.status(200).json({
+    accessToken,
+    refreshToken,
+  });
 };

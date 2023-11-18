@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import UStudent from "../Users/UStudent";
+import UStudent from "../User/UStudent";
 
 const RoomSchema = new mongoose.Schema({
   teacherId: { type: ObjectId, required: true, ref: "UTeacher" },

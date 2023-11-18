@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { getAsync } from "./redis";
 
-export const generateAccessToken = (user: { id: string; userType: number }) => {
+export const generateAccessToken = (user: { id: string; userType: string }) => {
   const payload = {
     id: user.id,
     userType: user.userType,

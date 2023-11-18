@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const TeacherSchema = new mongoose.Schema({
   userId: { type: String, unique: true, requried: true },
@@ -10,6 +11,15 @@ const TeacherSchema = new mongoose.Schema({
   sex: { type: ["M", "F", "N"], required: true },
   region: { type: String },
   school: { type: String, required: true },
+});
+
+TeacherSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(
+      this.password,
+      Number(process.env.BYCRYPT_SALT)
+    );
+  }
 });
 
 const UTeacher = mongoose.model("UTeacher", TeacherSchema);
