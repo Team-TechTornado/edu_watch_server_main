@@ -6,7 +6,7 @@ import { compare } from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
 
-export const postJoinStudent = async (req: Request, res: Response) => {
+export const postStudentJoin = async (req: Request, res: Response) => {
   const formData = req.body;
   const checkId = await UStudent.exists({ userId: formData.userId });
   if (checkId) {
@@ -29,7 +29,7 @@ export const postJoinStudent = async (req: Request, res: Response) => {
   }
 };
 
-export const postJoinParent = async (req: Request, res: Response) => {
+export const postParentJoin = async (req: Request, res: Response) => {
   const formData = req.body;
   const checkId = await UParent.exists({ userId: formData.userId });
   if (checkId) {
@@ -52,7 +52,7 @@ export const postJoinParent = async (req: Request, res: Response) => {
   }
 };
 
-export const postJoinTeacher = async (req: Request, res: Response) => {
+export const postTeacherJoin = async (req: Request, res: Response) => {
   const formData = req.body;
   const checkId = await UTeacher.exists({ userId: formData.userId });
   if (checkId) {
@@ -75,7 +75,7 @@ export const postJoinTeacher = async (req: Request, res: Response) => {
   }
 };
 
-export const postLoginStudent = async (req: Request, res: Response) => {
+export const postStudentLogin = async (req: Request, res: Response) => {
   const { userId, password } = req.body;
   const student = await UStudent.findOne({ userId });
   if (!student) {
@@ -103,7 +103,7 @@ export const postLoginStudent = async (req: Request, res: Response) => {
   });
 };
 
-export const postLoginParent = async (req: Request, res: Response) => {
+export const postParentLogin = async (req: Request, res: Response) => {
   const { userId, password } = req.body;
   const parent = await UParent.findOne({ userId });
   if (!parent) {
@@ -131,7 +131,7 @@ export const postLoginParent = async (req: Request, res: Response) => {
   });
 };
 
-export const postLoginTeacher = async (req: Request, res: Response) => {
+export const postTeacherLogin = async (req: Request, res: Response) => {
   const { userId, password } = req.body;
   const teacher = await UTeacher.findOne({ userId });
   if (!teacher) {

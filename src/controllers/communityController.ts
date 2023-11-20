@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import CBoard from "../models/Community/CBoard";
 import CPost from "../models/Community/CPost";
-import { responseEncoding } from "axios";
 import CComment from "../models/Community/CComment";
 
 // 추가 구현
