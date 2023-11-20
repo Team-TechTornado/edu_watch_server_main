@@ -34,41 +34,52 @@ export const getPost = async (req: Request, res: Response) => {
 
 export const postPost = async (req: Request, res: Response) => {
   try {
-    const { boardId, title, content } = req.body;
+    const { boardId, title, contents } = req.body;
     if (req.params.userType !== "Student") {
-      return res.status(400).json();
+      return res.status(400).json({
+        errorMsg: 'UserType is not "Student"',
+      });
     }
 
     const existBoard = await CBoard.exists({ code: boardId });
     if (!existBoard) {
-      return res.status(400).json();
+      return res.status(400).json({
+        errorMsg: "Invalid boardId",
+      });
     }
 
     await CPost.create({
       writer: req.params.id,
       boardId,
       title,
-      content,
+      contents,
     });
 
     return res.status(200).json();
   } catch (e) {
-    return res.status(400).json();
+    return res.status(400).json(e);
   }
 };
 
 export const putPost = async (req: Request, res: Response) => {
   const postId = req.params?.postId;
   if (!postId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No postId in path",
+    });
   }
 
   const post = await CPost.findById(postId);
   if (!post) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid postId",
+    });
   }
-  if (post.writer !== req.params.id) {
-    return res.status(400).json();
+
+  if (String(post.writer) !== req.params.id) {
+    return res.status(400).json({
+      errorMsg: "User is not author",
+    });
   }
 
   if (req.body?.contents) {
@@ -86,14 +97,21 @@ export const putPost = async (req: Request, res: Response) => {
 export const deletePost = async (req: Request, res: Response) => {
   const postId = req.params?.postId;
   if (!postId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No postId in path",
+    });
   }
+
   const post = await CPost.findById(postId);
   if (!post) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid postId",
+    });
   }
-  if (post.writer !== req.params.id) {
-    return res.status(400).json();
+  if (String(post.writer) !== req.params.id) {
+    return res.status(400).json({
+      errorMsg: "User is not author",
+    });
   }
 
   await CPost.findByIdAndDelete(postId);
@@ -103,11 +121,15 @@ export const deletePost = async (req: Request, res: Response) => {
 export const getComment = async (req: Request, res: Response) => {
   const postId = req.params?.postId;
   if (!postId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No postId in path",
+    });
   }
   const post = await CPost.findById(postId);
   if (!post) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid postId",
+    });
   }
   //pagination 구현 (req.query.page)
   const comments = await CComment.find({ postId });
@@ -117,11 +139,15 @@ export const getComment = async (req: Request, res: Response) => {
 export const postComment = async (req: Request, res: Response) => {
   const postId = req.params?.postId;
   if (!postId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No postId in path",
+    });
   }
   const post = await CPost.findById(postId);
   if (!post) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid postId",
+    });
   }
 
   await CComment.create({
@@ -137,15 +163,21 @@ export const postComment = async (req: Request, res: Response) => {
 export const putComment = async (req: Request, res: Response) => {
   const commentId = req.params?.commentId;
   if (!commentId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No commentId in path",
+    });
   }
   const comment = await CComment.findById(commentId);
   if (!comment) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid commentId",
+    });
   }
 
-  if (comment.writer !== req.params.id) {
-    return res.status(400).json();
+  if (String(comment.writer) !== req.params.id) {
+    return res.status(400).json({
+      errorMsg: "User is not author",
+    });
   }
 
   if (req.body?.contents) {
@@ -160,15 +192,21 @@ export const putComment = async (req: Request, res: Response) => {
 export const deleteComment = async (req: Request, res: Response) => {
   const commentId = req.params?.commentId;
   if (!commentId) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "No commentId in path",
+    });
   }
   const comment = await CComment.findById(commentId);
   if (!comment) {
-    return res.status(400).json();
+    return res.status(400).json({
+      errorMsg: "Invalid commentId",
+    });
   }
 
-  if (comment.writer !== req.params.id) {
-    return res.status(400).json();
+  if (String(comment.writer) !== req.params.id) {
+    return res.status(400).json({
+      errorMsg: "User is not author",
+    });
   }
 
   await CComment.findByIdAndDelete(commentId);

@@ -7,9 +7,10 @@ export const authJWT = (req: Request, res: Response, next: NextFunction) => {
     const result = verifyAccessToken(token);
     if (result) {
       req.params.id = result.id;
-      req.params.userType = result.userType.toString(); // 다시 고민하기
-      next();
+      req.params.userType = result.userType; // 다시 고민하기
+      console.log(req.params.id);
+      return next();
     }
   }
-  res.status(401).json();
+  return res.status(401).json();
 };

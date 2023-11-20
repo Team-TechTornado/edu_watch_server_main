@@ -1,13 +1,12 @@
 import jwt from "jsonwebtoken";
-import { getAsync } from "./redis";
+import { redisClient } from "./redis";
+import { promisify } from "util";
 
-export const generateAccessToken = (user: { id: string; userType: string }) => {
-  const payload = {
-    id: user.id,
-    userType: user.userType,
-  };
-
-  return jwt.sign(payload, process.env.JWT_SECRET as jwt.Secret, {
+export const generateAccessToken = async (user: {
+  id: string;
+  userType: string;
+}) => {
+  return jwt.sign(user, process.env.JWT_SECRET as jwt.Secret, {
     algorithm: "HS256",
     expiresIn: "1h",
   });
@@ -18,22 +17,24 @@ export const verifyAccessToken = (token: string) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
     return {
       id: (decoded as { id: string }).id,
-      userType: (decoded as { userType: number }).userType,
+      userType: (decoded as { userType: string }).userType,
     };
   } catch (e) {
-    return null;
+    console.log(e);
+    return;
   }
 };
 
 export const generateRefreshToken = () => {
   return jwt.sign({}, process.env.JWT_SECRET as jwt.Secret, {
     algorithm: "HS256",
-    expiresIn: "1m",
+    expiresIn: "2w",
   });
 };
 
 export const verifyRefreshToken = async (token: string, userId: string) => {
   try {
+    const getAsync = promisify(redisClient.get).bind(redisClient);
     const refreshToken = getAsync(userId);
     if (token === refreshToken) {
       jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);

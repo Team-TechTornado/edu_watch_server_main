@@ -25,7 +25,7 @@ export const postStudentJoin = async (req: Request, res: Response) => {
     await UStudent.create(req.body);
     return res.status(200).json();
   } catch (e) {
-    return res.status(405).json();
+    return res.status(405).json(e);
   }
 };
 
@@ -86,16 +86,16 @@ export const postStudentLogin = async (req: Request, res: Response) => {
     return res.status(402).json();
   }
 
-  //로그인 성공
-  //JWT 발급
-  const accessToken = generateAccessToken({
-    id: student.id,
+  const accessToken = await generateAccessToken({
+    id: String(student._id),
     userType: "Student",
   });
 
   const refreshToken = generateRefreshToken();
 
-  redisClient.set(student.id, refreshToken);
+  await redisClient.connect();
+  await redisClient.set(student.id, refreshToken);
+  await redisClient.disconnect();
 
   return res.status(200).json({
     accessToken,
@@ -122,8 +122,9 @@ export const postParentLogin = async (req: Request, res: Response) => {
   });
 
   const refreshToken = generateRefreshToken();
-
-  redisClient.set(parent.id, refreshToken);
+  await redisClient.connect();
+  await redisClient.set(parent.id, refreshToken);
+  await redisClient.disconnect();
 
   return res.status(200).json({
     accessToken,
@@ -150,8 +151,9 @@ export const postTeacherLogin = async (req: Request, res: Response) => {
   });
 
   const refreshToken = generateRefreshToken();
-
-  redisClient.set(teacher.id, refreshToken);
+  await redisClient.connect();
+  await redisClient.set(teacher.id, refreshToken);
+  await redisClient.disconnect();
 
   return res.status(200).json({
     accessToken,
