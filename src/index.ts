@@ -9,6 +9,7 @@ import bodyParser from "body-parser";
 import prelaunchRouter from "./routers/prelaunchRouter";
 import userRouter from "./routers/userRouter";
 import communityRouter from "./routers/communityRouter";
+import authRouter from "./routers/authRouter";
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use(morgan("tiny"));
 app.use("/prelaunch", prelaunchRouter);
 app.use("/users", userRouter);
 app.use("/community", communityRouter);
+app.use("/auth", authRouter);
 
 app.listen(8080, "0.0.0.0", () => console.log("✅  Server Ready!"));

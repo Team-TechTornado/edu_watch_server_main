@@ -94,7 +94,7 @@ export const postStudentLogin = async (req: Request, res: Response) => {
   const refreshToken = generateRefreshToken();
 
   await redisClient.connect();
-  await redisClient.set(student.id, refreshToken);
+  await redisClient.set(String(student._id), refreshToken);
   await redisClient.disconnect();
 
   return res.status(200).json({
@@ -123,7 +123,7 @@ export const postParentLogin = async (req: Request, res: Response) => {
 
   const refreshToken = generateRefreshToken();
   await redisClient.connect();
-  await redisClient.set(parent.id, refreshToken);
+  await redisClient.set(String(parent._id), refreshToken);
   await redisClient.disconnect();
 
   return res.status(200).json({
@@ -152,7 +152,7 @@ export const postTeacherLogin = async (req: Request, res: Response) => {
 
   const refreshToken = generateRefreshToken();
   await redisClient.connect();
-  await redisClient.set(teacher.id, refreshToken);
+  await redisClient.set(String(teacher._id), refreshToken);
   await redisClient.disconnect();
 
   return res.status(200).json({

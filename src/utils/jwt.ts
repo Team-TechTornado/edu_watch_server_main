@@ -20,8 +20,8 @@ export const verifyAccessToken = (token: string) => {
       userType: (decoded as { userType: string }).userType,
     };
   } catch (e) {
-    console.log(e);
-    return;
+    //accessToken 만료
+    return false;
   }
 };
 
@@ -43,6 +43,7 @@ export const verifyRefreshToken = async (token: string, userId: string) => {
       return false;
     }
   } catch (e) {
+    console.log(e);
     return false;
   }
 };
