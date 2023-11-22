@@ -8,15 +8,11 @@ export const getPost = async (req: Request, res: Response) => {
   try {
     const search_object: {
       board?: number;
-      page?: number;
       author?: string;
       postId?: string;
     } = {};
     if (req.query.board) {
       search_object.board = Number(req.query.board);
-    }
-    if (req.query.page) {
-      //pagination 구현
     }
     if (req.query.author) {
       search_object.author = req.query.author as string;
@@ -25,10 +21,11 @@ export const getPost = async (req: Request, res: Response) => {
       search_object.postId = req.query.postId as string;
     }
 
-    const posts = await CPost.find(search_object);
+    const posts = req.query.page ? await CPost.find(search_object).sort({createdAt : -1}).skip(10 * (page - 1)).limit(10) : await CPost.find(search_object);
+
     return res.status(200).json(posts);
   } catch (e) {
-    return res.status(400).json();
+    return res.status(400).json(e);
   }
 };
 
@@ -131,8 +128,7 @@ export const getComment = async (req: Request, res: Response) => {
       errorMsg: "Invalid postId",
     });
   }
-  //pagination 구현 (req.query.page)
-  const comments = await CComment.find({ postId });
+  const comments = req.query.page ? await CComment.find({postId}).skip(10 * (page - 1)).limit(10) : await CComment.find({ postId }); 
   return res.status(200).json(comments);
 };
 
