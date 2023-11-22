@@ -14,7 +14,7 @@ export const authJWT = (req: Request, res: Response, next: NextFunction) => {
       // Access Token 만료되었을 때
       const decoded = jwt.decode(token)
       //1. Refresh Token 은 만료되지 않았을 때
-      if (verifyRefreshToken(token, decoded))
+      // if (verifyRefreshToken(token, decoded))
 
       //2. Refresh Token 도 만료되었을 때
     }

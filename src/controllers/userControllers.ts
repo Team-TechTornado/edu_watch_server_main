@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import UStudent from "../models/User/UStudent";
 import UParent from "../models/User/UParent";
 import UTeacher from "../models/User/UTeacher";
-import { compare } from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
 
+// import { compare } from "bcryptjs";
+const {compare} = require("bcryptjs");
 export const postStudentJoin = async (req: Request, res: Response) => {
   const formData = req.body;
   const checkId = await UStudent.exists({ userId: formData.userId });

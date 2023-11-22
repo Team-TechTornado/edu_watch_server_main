@@ -21,7 +21,7 @@ export const getPost = async (req: Request, res: Response) => {
       search_object.postId = req.query.postId as string;
     }
 
-    const posts = req.query.page ? await CPost.find(search_object).sort({createdAt : -1}).skip(10 * (page - 1)).limit(10) : await CPost.find(search_object);
+    const posts = req.query.page ? await CPost.find(search_object).sort({createdAt : -1}).skip(10 * (Number(req.query.page) - 1)).limit(10) : await CPost.find(search_object);
 
     return res.status(200).json(posts);
   } catch (e) {
@@ -128,7 +128,7 @@ export const getComment = async (req: Request, res: Response) => {
       errorMsg: "Invalid postId",
     });
   }
-  const comments = req.query.page ? await CComment.find({postId}).skip(10 * (page - 1)).limit(10) : await CComment.find({ postId }); 
+  const comments = req.query.page ? await CComment.find({postId}).skip(10 * (Number(req.query.page) - 1)).limit(10) : await CComment.find({ postId }); 
   return res.status(200).json(comments);
 };
 

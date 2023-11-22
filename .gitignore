@@ -136,3 +136,4 @@ dist/
 !.env.vault
 
 build/
+dist/

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
+const {hash } = require("bcryptjs");
 
 const TeacherSchema = new mongoose.Schema({
   userId: { type: String, unique: true, requried: true },
@@ -15,7 +16,7 @@ const TeacherSchema = new mongoose.Schema({
 
 TeacherSchema.pre("save", async function () {
   if (this.isModified("password")) {
-    this.password = await bcrypt.hash(
+    this.password = await hash(
       this.password,
       Number(process.env.BYCRYPT_SALT)
     );
