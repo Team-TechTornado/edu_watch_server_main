@@ -1,7 +1,7 @@
 import mongoose, { Error } from "mongoose";
 require("dotenv").config();
 
-mongoose.connect(process.env.MONGO_ADD || "mongodb://localhost:27017", {
+mongoose.connect(process.env.MONGO_ADD as string, {
   dbName: "main",
 });
 
