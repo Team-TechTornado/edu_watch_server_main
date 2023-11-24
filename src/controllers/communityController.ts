@@ -21,7 +21,12 @@ export const getPost = async (req: Request, res: Response) => {
       search_object.postId = req.query.postId as string;
     }
 
-    const posts = req.query.page ? await CPost.find(search_object).sort({createdAt : -1}).skip(10 * (Number(req.query.page) - 1)).limit(10) : await CPost.find(search_object);
+    const posts = req.query.page
+      ? await CPost.find(search_object)
+          .sort({ createdAt: -1 })
+          .skip(10 * (Number(req.query.page) - 1))
+          .limit(10)
+      : await CPost.find(search_object);
 
     return res.status(200).json(posts);
   } catch (e) {
@@ -52,7 +57,9 @@ export const postPost = async (req: Request, res: Response) => {
       contents,
     });
 
-    return res.status(200).json();
+    return res.status(200).json({
+      accessToken: res.locals?.accessToken,
+    });
   } catch (e) {
     return res.status(400).json(e);
   }
@@ -88,7 +95,9 @@ export const putPost = async (req: Request, res: Response) => {
 
   await post.save();
 
-  return res.status(200).json();
+  return res.status(200).json({
+    accessToken: res.locals?.accessToken,
+  });
 };
 
 export const deletePost = async (req: Request, res: Response) => {
@@ -112,7 +121,9 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 
   await CPost.findByIdAndDelete(postId);
-  return res.status(200).json();
+  return res.status(200).json({
+    accessToken: res.locals?.accessToken,
+  });
 };
 
 export const getComment = async (req: Request, res: Response) => {
@@ -128,7 +139,11 @@ export const getComment = async (req: Request, res: Response) => {
       errorMsg: "Invalid postId",
     });
   }
-  const comments = req.query.page ? await CComment.find({postId}).skip(10 * (Number(req.query.page) - 1)).limit(10) : await CComment.find({ postId }); 
+  const comments = req.query.page
+    ? await CComment.find({ postId })
+        .skip(10 * (Number(req.query.page) - 1))
+        .limit(10)
+    : await CComment.find({ postId });
   return res.status(200).json(comments);
 };
 
@@ -153,7 +168,9 @@ export const postComment = async (req: Request, res: Response) => {
     contents: req.body.contents,
   });
 
-  return res.status(200).json();
+  return res.status(200).json({
+    accessToken: res.locals?.accessToken,
+  });
 };
 
 export const putComment = async (req: Request, res: Response) => {
@@ -182,7 +199,9 @@ export const putComment = async (req: Request, res: Response) => {
 
   await comment.save();
 
-  return res.status(200).json();
+  return res.status(200).json({
+    accessToken: res.locals?.accessToken,
+  });
 };
 
 export const deleteComment = async (req: Request, res: Response) => {
@@ -206,7 +225,7 @@ export const deleteComment = async (req: Request, res: Response) => {
   }
 
   await CComment.findByIdAndDelete(commentId);
-  return res.status(200).json();
+  return res.status(200).json({
+    accessToken: res.locals?.accessToken,
+  });
 };
-
-export const getMessage = async (req: Request, res: Response) => {};

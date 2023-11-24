@@ -8,7 +8,7 @@ export const generateAccessToken = async (user: {
 }) => {
   return jwt.sign(user, process.env.JWT_SECRET as jwt.Secret, {
     algorithm: "HS256",
-    expiresIn: "1h",
+    expiresIn: 100 * 60 * 60,
   });
 };
 
@@ -28,17 +28,18 @@ export const verifyAccessToken = (token: string) => {
 export const generateRefreshToken = () => {
   return jwt.sign({}, process.env.JWT_SECRET as jwt.Secret, {
     algorithm: "HS256",
-    expiresIn: "2w",
+    expiresIn: 100 * 60 * 60 * 60 * 24 * 14,
   });
 };
 
 export const verifyRefreshToken = async (token: string, userId: string) => {
   try {
-    const getAsync = promisify(redisClient.get).bind(redisClient);
-    const refreshToken = getAsync(userId);
+    await redisClient.connect();
+    const refreshToken = await redisClient.get(userId);
+    await redisClient.disconnect();
     if (token === refreshToken) {
-      jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
-      return true;
+      const ok = await jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
+      return ok;
     } else {
       return false;
     }
